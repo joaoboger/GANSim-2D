@@ -5,7 +5,8 @@ import importlib
 import imp
 import numpy as np
 from collections import OrderedDict
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+from tensorflow.python.ops import nccl_ops as nccl
 
 #----------------------------------------------------------------------------
 # Convenience.
@@ -204,7 +205,7 @@ def save_summaries(filewriter, global_step=None):
 
 def import_module(module_or_obj_name):
     parts = module_or_obj_name.split('.')
-    parts[0] = {'np': 'numpy', 'tf': 'tensorflow'}.get(parts[0], parts[0])
+    parts[0] = {'np': 'numpy', 'tf': 'tensorflow.compat.v1'}.get(parts[0], parts[0])
     for i in range(len(parts), 0, -1):
         try:
             module = importlib.import_module('.'.join(parts[:i]))
@@ -329,6 +330,7 @@ class Optimizer:
             for dev_idx, (dev, grads) in enumerate(dev_grads.items()):
                 with tf.name_scope('ApplyGrads%d' % dev_idx), tf.device(dev):
 
+                    g = nccl.all_sum(g) # As instructed in Codes adjustments for TensorFlow 2.txt
                     # Scale gradients as needed.
                     if self.use_loss_scaling or total_grads > 1:
                         with tf.name_scope('Scale'):
@@ -553,6 +555,9 @@ class Network:
         self.static_kwargs = state['static_kwargs']
         self._build_module_src = state['build_module_src']
         self._build_func_name = state['build_func_name']
+        self._build_module_src = self._build_module_src.replace('tensorflow', 'tensorflow.compat.v1')
+        # Depending on the cudnn versions, this following line may be needed, otherwise error reported ('argument 0 of dimension....')
+        self._build_module_src = self._build_module_src.replace('.value','')
         
         # Parse imported module.
         module = imp.new_module('_tfutil_network_import_module_%d' % len(_network_import_modules))

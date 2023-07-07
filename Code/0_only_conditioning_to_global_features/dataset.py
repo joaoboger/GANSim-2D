@@ -1,7 +1,7 @@
 import os
 import glob
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import tfutil
 # import matplotlib.pyplot as plt
 
