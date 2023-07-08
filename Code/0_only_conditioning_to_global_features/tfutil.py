@@ -557,7 +557,7 @@ class Network:
         self._build_func_name = state['build_func_name']
         self._build_module_src = self._build_module_src.replace('tensorflow', 'tensorflow.compat.v1')
         # Depending on the cudnn versions, this following line may be needed, otherwise error reported ('argument 0 of dimension....')
-        self._build_module_src = self._build_module_src.replace('.value','')
+        # self._build_module_src = self._build_module_src.replace('.value','')
         
         # Parse imported module.
         module = imp.new_module('_tfutil_network_import_module_%d' % len(_network_import_modules))
