@@ -322,7 +322,8 @@ class Optimizer:
                     for var_idx, grad_shape in enumerate(self._grad_shapes):
                         g = [dev_grads[dev][var_idx][0] for dev in devices]
                         if np.prod(grad_shape): # nccl does not support zero-sized tensors
-                            g = tf.contrib.nccl.all_sum(g)
+                            # g = tf.contrib.nccl.all_sum(g)
+                            g = nccl.all_sum(g)
                         for dev, gg in zip(devices, g):
                             dev_grads[dev][var_idx] = (gg, dev_grads[dev][var_idx][1])
 
@@ -330,7 +331,7 @@ class Optimizer:
             for dev_idx, (dev, grads) in enumerate(dev_grads.items()):
                 with tf.name_scope('ApplyGrads%d' % dev_idx), tf.device(dev):
 
-                    g = nccl.all_sum(g) # As instructed in Codes adjustments for TensorFlow 2.txt
+                    # g = nccl.all_sum(g) # As instructed in Codes adjustments for TensorFlow 2.txt
                     # Scale gradients as needed.
                     if self.use_loss_scaling or total_grads > 1:
                         with tf.name_scope('Scale'):

@@ -13,6 +13,7 @@ import imp
 import numpy as np
 from collections import OrderedDict
 import tensorflow.compat.v1 as tf
+from tensorflow.python.ops import nccl_ops as nccl
 
 #----------------------------------------------------------------------------
 # Convenience.
@@ -211,7 +212,7 @@ def save_summaries(filewriter, global_step=None):
 
 def import_module(module_or_obj_name):
     parts = module_or_obj_name.split('.')
-    parts[0] = {'np': 'numpy', 'tf': 'tensorflow'}.get(parts[0], parts[0])
+    parts[0] = {'np': 'numpy', 'tf': 'tensorflow.compat.v1'}.get(parts[0], parts[0])
     for i in range(len(parts), 0, -1):
         try:
             module = importlib.import_module('.'.join(parts[:i]))
@@ -328,7 +329,7 @@ class Optimizer:
                     for var_idx, grad_shape in enumerate(self._grad_shapes):
                         g = [dev_grads[dev][var_idx][0] for dev in devices]
                         if np.prod(grad_shape): # nccl does not support zero-sized tensors
-                            g = tf.contrib.nccl.all_sum(g)
+                            g = nccl.all_sum(g)
                         for dev, gg in zip(devices, g):
                             dev_grads[dev][var_idx] = (gg, dev_grads[dev][var_idx][1])
 
@@ -560,6 +561,7 @@ class Network:
         self.static_kwargs = state['static_kwargs']
         self._build_module_src = state['build_module_src']
         self._build_func_name = state['build_func_name']
+        self._build_module_src = self._build_module_src.replace('tensorflow', 'tensorflow.compat.v1')
         
         # Parse imported module.
         module = imp.new_module('_tfutil_network_import_module_%d' % len(_network_import_modules))
