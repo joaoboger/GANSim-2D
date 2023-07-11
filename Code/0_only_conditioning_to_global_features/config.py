@@ -10,11 +10,11 @@ class EasyDict(dict):
 #----------------------------------------------------------------------------
 # Paths.
 
-data_dir = '/scratch/users/suihong/DataSets(MultiChannels_Version4_Consistency)/'
+data_dir = 'C:\\Users\\Windows\\Documents\\LTrace\\GeoModeling_GANSim-2D_Condition_to_Well_Facies_and_Global_Features\\TrainingData\\DataSets(MultiChannels_Version4_Consistency)\\'
 # "data_dir" refers to the path of grandparent directory of training dataset like *.tfrecord files. "dataset" in line 35 refers to parent folder name of training dataset.
 # e.g., folder "AA/BB/CC" includes all the *.tfrecord files training dataset, then data_dir = 'AA/BB/', and in line 35, tfrecord_dir=  'CC'. 
 
-result_dir = '/scratch/users/suihong/ProGAN_MultiChannel_Reusults_ConditionedtoMultiConditions_TF'
+result_dir = 'C:\\Users\\Windows\\Documents\\LTrace\\GeoModeling_GANSim-2D_Condition_to_Well_Facies_and_Global_Features\\TrainingResults\\1_GANs conditioned to global features\\'
 
 #----------------------------------------------------------------------------
 # TensorFlow options.
@@ -53,7 +53,7 @@ G_loss.labeltypes = labeltypes
 
 # dataset.well_enlarge = True  # to let the dataset output enlarged well facies data; the default is not enlarged.
 
-desc += '-2gpu'; num_gpus = 2; sched.minibatch_base = 32; sched.minibatch_dict = {4: 32, 8: 32, 16: 32, 32: 32, 64: 32}; sched.G_lrate_dict = {4: 0.0025, 8: 0.005, 16: 0.005, 32: 0.0035, 64: 0.0025}; sched.D_lrate_dict = EasyDict(sched.G_lrate_dict); train.total_kimg = 60000
+desc += '-2gpu'; num_gpus = 1; sched.minibatch_base = 32; sched.minibatch_dict = {4: 32, 8: 32, 16: 32, 32: 32, 64: 32}; sched.G_lrate_dict = {4: 0.0025, 8: 0.005, 16: 0.005, 32: 0.0035, 64: 0.0025}; sched.D_lrate_dict = EasyDict(sched.G_lrate_dict); train.total_kimg = 1000
 
 sched.max_minibatch_per_gpu = {32: 32, 64: 32}
 
