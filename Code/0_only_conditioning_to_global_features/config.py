@@ -58,5 +58,5 @@ desc += '-2gpu'; num_gpus = 1; sched.minibatch_base = 32; sched.minibatch_dict =
 sched.max_minibatch_per_gpu = {32: 32, 64: 32}
 
 # Set if no growing, i.e., the conventional training method.
-#desc += '-nogrowing'; sched.lod_initial_resolution = 64; sched.lod_training_kimg = 0; sched.lod_transition_kimg = 0; train.total_kimg = 10000
+desc += '-nogrowing'; sched.lod_initial_resolution = 64; sched.lod_training_kimg = 0; sched.lod_transition_kimg = 0; train.total_kimg = 1000
 
